@@ -42,7 +42,8 @@ export default function setupDeepPopulateHook(options: GraphPopulateHookOptions)
       const currentQuery = Object.assign({}, populateQuery[key])
 
       const populate = populates[key]
-      const service = app.service(populate.service)
+      //TODO
+      const service = app.service(populate.service as string)
 
       let params = []
       if (populate.params) {

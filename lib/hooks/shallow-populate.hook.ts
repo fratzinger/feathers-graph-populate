@@ -15,6 +15,8 @@ import {
 import {
   CumulatedRequestResult,
   PopulateObject,
+  PopulateObjectCumulated,
+  PopulateObjectIndividual,
   ShallowPopulateOptions
 } from '../types'
 
@@ -37,7 +39,7 @@ export default function (
 
   assertIncludes(includes)
 
-  const cumulatedIncludes = includes.filter(include => !include.requestPerItem)
+  const cumulatedIncludes = includes.filter(include => !include.requestPerItem) as PopulateObjectCumulated[]
 
   const includesByKeyHere = cumulatedIncludes.reduce((includes, include) => {
     if (_has(include, 'keyHere') && !includes[include.keyHere]) {
@@ -48,7 +50,7 @@ export default function (
 
   const keysHere = Object.keys(includesByKeyHere)
 
-  const includesPerItem = includes.filter(include => include.requestPerItem)
+  const includesPerItem = includes.filter(include => include.requestPerItem) as PopulateObjectIndividual[]
 
   return async function shallowPopulate (
     context: HookContext
@@ -91,7 +93,7 @@ export default function (
     }, {})
 
     const promisesCumulatedResults = cumulatedIncludes.map(async (
-      include: PopulateObject
+      include: PopulateObjectCumulated
     ): Promise<CumulatedRequestResult> => {
       let result: CumulatedRequestResult
       try {

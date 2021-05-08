@@ -738,6 +738,50 @@ describe('populating thing', () => {
             assert.deepStrictEqual(result.tasks, expectedTasks, `${type}: tasks populated correctly`)
           }
         })
+
+        it('populates with custom service function', async () => {
+          for (const { type, dataResult } of beforeAfter) {
+            const context = {
+              app: {
+                service (path) {
+                  return services[path]
+                }
+              },
+              method: 'create',
+              type,
+              params: {},
+              // Data for a single track
+              [dataResult]: {
+                id: '111',
+                name: 'My Monkey and Me',
+                userId: '11',
+                service: 'tasks'
+              }
+            } as unknown as HookContext
+
+            const options = {
+              include: {
+                // from: 'posts',
+                service: (item: Record<string, unknown>, c: HookContext) => {
+                  assert.ok(item, 'passed item in service-function')
+                  assert.strictEqual(c, context, 'passed context in service-function')
+                  return item.service as string
+                },
+                nameAs: 'tasks',
+                params: function () {
+                  return { query: { userId: this.userId } }
+                }
+              }
+            }
+
+            const shallowPopulate = makePopulate(options)
+            const response = await shallowPopulate(context)
+            const result = response[dataResult]
+
+            const expectedTasks = Object.values(services.tasks.store).filter(x => x.userId === '11')
+            assert.deepStrictEqual(result.tasks, expectedTasks, `${type}: tasks populated correctly`)
+          }
+        })
       })
 
       // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -1393,6 +1437,117 @@ describe('populating thing', () => {
             assert.deepStrictEqual(result.emptyTasks, [], 'set default to empty array')
           }
         })
+
+        it('populates with custom service function', async () => {
+          for (const { type, dataResult } of beforeAfter) {
+            const context = {
+              app: {
+                service (path) {
+                  return services[path]
+                }
+              },
+              method: 'create',
+              type,
+              params: {},
+              // Data for a single track
+              [dataResult]: {
+                id: '111',
+                name: 'My Monkey and Me',
+                userId: '11',
+                service: 'tasks'
+              }
+            } as unknown as HookContext
+
+            const options = {
+              include: [
+                {
+                  // from: 'posts',
+                  service: (item) => {
+                    if (item.userId === context[dataResult].userId) { return 'tasks' }
+                  },
+                  nameAs: 'tasks',
+                  params: function () {
+                    return { query: { userId: this.userId } }
+                  }
+                },
+                {
+                  // from: 'posts',
+                  service: 'tags',
+                  nameAs: 'tags',
+                  params: function () {
+                    return {
+                      query: {
+                        userId: this.userId,
+                        $select: ['id']
+                      }
+                    }
+                  }
+                },
+                {
+                  service: async (item, c) => {
+                    assert.strictEqual(c, context, 'has context in service function')
+                    return (item.userId === context[dataResult].userId) ? 'orgs' : ''
+                  },
+                  nameAs: 'org',
+                  asArray: false,
+                  params: async function (params, context) {
+                    const user = await context.app.service('users').get(this.userId)
+                    return { query: { id: user.orgId } }
+                  }
+                },
+                {
+                  // from: 'posts',
+                  service: 'tags',
+                  nameAs: 'tag',
+                  asArray: false,
+                  params: [
+                    function () {
+                      return {
+                        query: {
+                          userId: this.userId
+                        }
+                      }
+                    },
+                    { query: { $select: ['id'] } }
+                  ]
+                },
+                {
+                  // from: 'posts',
+                  service: () => 'tasks',
+                  nameAs: 'nullTask',
+                  asArray: false,
+                  params: function () {
+                    return undefined
+                  }
+                },
+                {
+                  // from: 'posts',
+                  service: () => 'tasks',
+                  nameAs: 'emptyTasks',
+                  params: function () {
+                    return undefined
+                  }
+                }
+              ]
+            }
+
+            const shallowPopulate = makePopulate(options)
+
+            const response = await shallowPopulate(context)
+            const result = response[dataResult]
+            const expectedTasks = Object.values(services.tasks.store).filter(x => x.userId === '11')
+            const expectedTags = Object.values(services.tags.store).filter(x => x.userId === result.userId).map(x => { return { id: x.id } })
+            const user = Object.values(services.users.store).filter(x => x.id === result.userId)[0]
+            const expectedOrg = Object.values(services.orgs.store).filter(x => x.id === user.orgId)[0]
+            const expectedTag = expectedTags[0]
+            assert.deepStrictEqual(result.tasks, expectedTasks, 'tasks populated correctly')
+            assert.deepStrictEqual(result.tags, expectedTags, 'tags populated correctly')
+            assert.deepStrictEqual(result.org, expectedOrg, 'populated org correctly')
+            assert.deepStrictEqual(result.tag, expectedTag, 'single tag populated correctly')
+            assert(result.nullTask === null, 'set default to null')
+            assert.deepStrictEqual(result.emptyTasks, [], 'set default to empty array')
+          }
+        })
       })
 
       // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -1991,6 +2146,61 @@ describe('populating thing', () => {
               include: {
                 // from: 'posts',
                 service: 'tasks',
+                nameAs: 'tasks',
+                params: function () {
+                  return { query: { userId: this.userId } }
+                }
+              }
+            }
+            const context = {
+              app: {
+                service (path) {
+                  return services[path]
+                }
+              },
+              method: 'create',
+              type,
+              params: {},
+              // Data for a single track
+              [dataResult]: posts
+            } as unknown as HookContext
+
+            const shallowPopulate = makePopulate(options)
+
+            const response = await shallowPopulate(context)
+            const result = response[dataResult]
+
+            result.forEach(post => {
+              const expectedTasks = Object.values(services.tasks.store).filter(x => x.userId === post.userId)
+              assert.deepStrictEqual(post.tasks, expectedTasks, 'tasks populated correctly')
+            })
+          }
+        })
+
+        it('populates with custom service function', async () => {
+          for (const { type, dataResult } of beforeAfter) {
+            const posts = [
+              {
+                id: '111',
+                name: 'My Monkey and Me',
+                userId: '11'
+              },
+              {
+                id: '222',
+                name: 'I forgot why I love you',
+                userId: '11'
+              },
+              {
+                id: 444,
+                name: 'One, two, three, one, two, three, drink',
+                userId: 44
+              }
+            ]
+
+            const options = {
+              include: {
+                // from: 'posts',
+                service: async () => 'tasks',
                 nameAs: 'tasks',
                 params: function () {
                   return { query: { userId: this.userId } }
@@ -2700,6 +2910,127 @@ describe('populating thing', () => {
                 },
                 {
                   service: 'orgs',
+                  nameAs: 'org',
+                  asArray: false,
+                  params: async function (params: Params, context: HookContext) {
+                    const user = await context.app.service('users').get(this.userId)
+                    return { query: { id: user.orgId } }
+                  }
+                },
+                {
+                  // from: 'posts',
+                  service: 'tags',
+                  nameAs: 'tag',
+                  asArray: false,
+                  params: [
+                    function () {
+                      return {
+                        query: {
+                          userId: this.userId
+                        }
+                      }
+                    },
+                    { query: { $select: ['id'] } }
+                  ]
+                },
+                {
+                  // from: 'posts',
+                  service: 'tasks',
+                  nameAs: 'nullTask',
+                  asArray: false,
+                  params: function () {
+                    return undefined
+                  }
+                },
+                {
+                  // from: 'posts',
+                  service: 'tasks',
+                  nameAs: 'emptyTasks',
+                  params: function () {
+                    return undefined
+                  }
+                }
+              ]
+            }
+            const context = {
+              app: {
+                service (path) {
+                  return services[path]
+                }
+              },
+              method: 'create',
+              type,
+              params: {},
+              // Data for a single track
+              [dataResult]: posts
+            } as unknown as HookContext
+
+            const shallowPopulate = makePopulate(options)
+
+            const response = await shallowPopulate(context)
+            const result = response[dataResult]
+
+            result.forEach(post => {
+              const expectedTasks = Object.values(services.tasks.store).filter(x => x.userId === post.userId)
+              const expectedTags = Object.values(services.tags.store).filter(x => x.userId === post.userId).map(x => { return { id: x.id } })
+              const user = Object.values(services.users.store).filter(x => x.id === post.userId)[0]
+              const expectedOrg = Object.values(services.orgs.store).filter(x => x.id === user.orgId)[0]
+              const expectedTag = expectedTags[0]
+              assert.deepStrictEqual(post.tasks, expectedTasks, 'tasks populated correctly')
+              assert.deepStrictEqual(post.tags, expectedTags, 'tags populated correctly')
+              assert.deepStrictEqual(post.org, expectedOrg, 'populated org correctly')
+              assert.deepStrictEqual(post.tag, expectedTag, 'single tag populated correctly')
+              assert(post.nullTask === null, 'set default to null')
+              assert.deepStrictEqual(post.emptyTasks, [], 'set default to empty array')
+            })
+          }
+        })
+
+        it('populates with custom service function', async () => {
+          for (const { type, dataResult } of beforeAfter) {
+            const posts = [
+              {
+                id: '111',
+                name: 'My Monkey and Me',
+                userId: '11'
+              },
+              {
+                id: '222',
+                name: 'I forgot why I love you',
+                userId: '11'
+              },
+              {
+                id: 444,
+                name: 'One, two, three, one, two, three, drink',
+                userId: 44
+              }
+            ]
+
+            const options = {
+              include: [
+                {
+                  // from: 'posts',
+                  service: () => 'tasks',
+                  nameAs: 'tasks',
+                  params: function () {
+                    return { query: { userId: this.userId } }
+                  }
+                },
+                {
+                  // from: 'posts',
+                  service: () => 'tags',
+                  nameAs: 'tags',
+                  params: function () {
+                    return {
+                      query: {
+                        userId: this.userId,
+                        $select: ['id']
+                      }
+                    }
+                  }
+                },
+                {
+                  service: async (item) => (item.userId) ? 'orgs' : '',
                   nameAs: 'org',
                   asArray: false,
                   params: async function (params: Params, context: HookContext) {

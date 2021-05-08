@@ -8,16 +8,27 @@ export type SingleGraphPopulateParams =
 export type GraphPopulateParams =
   SingleGraphPopulateParams|SingleGraphPopulateParams[]
 
-export interface PopulateObject {
+export interface PopulateObjectCumulated {
   service: string
   nameAs: string
-  keyHere?: string
-  keyThere?: string
+  keyHere: string
+  keyThere: string
   asArray?: boolean
-  requestPerItem?: boolean
+  requestPerItem?: false
   catchOnError?: boolean
   params?: GraphPopulateParams
 }
+
+export interface PopulateObjectIndividual {
+  service: string | ((item: Record<string, unknown>, context: HookContext) => string | undefined | Promise<string | undefined>)
+  nameAs: string
+  asArray?: boolean
+  requestPerItem?: true
+  catchOnError?: boolean
+  params?: GraphPopulateParams
+}
+
+export type PopulateObject = PopulateObjectCumulated | PopulateObjectIndividual
 
 export interface PopulateParams {
   name?: string
@@ -87,7 +98,7 @@ export interface ChainedParamsOptions {
 }
 
 export interface CumulatedRequestResult {
-  include: PopulateObject,
+  include: PopulateObjectCumulated,
   params?: Params,
   response?: { data: Record<string, unknown>[] } | Record<string, unknown>[]
 }

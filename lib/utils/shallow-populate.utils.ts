@@ -12,6 +12,7 @@ import {
   CumulatedRequestResult,
   GraphPopulateParams,
   PopulateObject,
+  PopulateObjectCumulated,
   ShallowPopulateOptions
 } from '../types'
 
@@ -116,7 +117,7 @@ export const chainedParams = async (
 
 export async function makeCumulatedRequest (
   app: Application,
-  include: PopulateObject,
+  include: PopulateObjectCumulated,
   dataMap: Record<string, unknown>,
   context: HookContext
 ): Promise<CumulatedRequestResult> {
@@ -185,7 +186,21 @@ export async function makeRequestPerItem (
     skipWhenUndefined: true
   }
 
-  const service = app.service(include.service)
+  let servicePath: string
+  let service
+  try {
+    if (typeof include.service === 'function') {
+      const s = include.service(item, context)
+      servicePath = await Promise.resolve(s)
+    } else {
+      servicePath = include.service
+    }
+    if (!servicePath) throw new Error('not processable')
+    service = app.service(servicePath)
+    if (!service) throw new Error('not processable')
+  } catch {
+    return
+  }
 
   const target = {
     path: include.service,
@@ -201,7 +216,7 @@ export async function makeRequestPerItem (
     return
   }
   const response = await service.find(params)
-  const relatedItems = response.data || response
+  const relatedItems: Record<string, unknown>[] = response.data || response
 
   if (asArray) {
     _set(item, nameAs, relatedItems)
@@ -213,7 +228,7 @@ export async function makeRequestPerItem (
 
 export function setItems (
   data: Record<string, unknown>[],
-  include: PopulateObject,
+  include: PopulateObjectCumulated,
   params: Params,
   response: { data: Record<string, unknown>[] } | Record<string, unknown>[]
 ): void {
@@ -250,7 +265,7 @@ type GetRelatedItemsResult = Record<string, unknown> | Record<string, unknown>[]
 export function getRelatedItems (
   ids: (string | number) | (string | number)[],
   relatedItems: Record<string, unknown>[],
-  include: PopulateObject,
+  include: PopulateObjectCumulated,
   params: Params
 ): GetRelatedItemsResult {
   const { keyThere, asArray } = include
