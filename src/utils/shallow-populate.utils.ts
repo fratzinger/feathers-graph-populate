@@ -79,15 +79,6 @@ export const assertIncludes = (includes: PopulateObject[]): void => {
         'shallowPopulate hook: Every `include` with attribute `keyHere` or `keyThere` also needs the other attribute defined',
       )
     }
-
-    if (
-      include.requestPerItem &&
-      ('keyHere' in include || 'keyThere' in include)
-    ) {
-      throw new Error(
-        'shallowPopulate hook: The attributes `keyHere` and `keyThere` are useless when you set `requestPerItem: true`. You should remove these properties',
-      )
-    }
   }
 
   const uniqueNameAs = _uniqBy(includes, 'nameAs')
