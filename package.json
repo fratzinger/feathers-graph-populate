@@ -36,7 +36,7 @@
     "dist/**"
   ],
   "engines": {
-    "node": ">= 22"
+    "node": "^22.18.0 || >=24.0.0"
   },
   "scripts": {
     "compile": "shx rm -rf dist/ && tsdown src/index.ts --format esm --dts",
