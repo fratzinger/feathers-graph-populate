@@ -1,6 +1,16 @@
-import type { Application, HookContext, Params } from '@feathersjs/feathers'
+import type {
+  Application,
+  HookContext,
+  NextFunction,
+  Params,
+} from '@feathersjs/feathers'
 
-export type AnyData = Record<string, any>
+export type GraphPopulateHookFunction = (
+  context: HookContext,
+  next?: NextFunction,
+) => Promise<HookContext>
+
+export type AnyData = Record<string, unknown>
 
 export type SingleGraphPopulateParams =
   | Params
@@ -51,7 +61,7 @@ export interface InitOptions {
 }
 
 export type Method = 'find' | 'get' | 'create' | 'update' | 'patch' | 'remove'
-export type Type = 'before' | 'after' | 'error'
+export type Type = 'around' | 'before' | 'after' | 'error'
 
 export type GraphPopulateHookMap = {
   [key in Method | 'all']?: SingleGraphPopulateParams[]

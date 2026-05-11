@@ -2,9 +2,10 @@ import _isEmpty from 'lodash/isEmpty.js'
 
 import { shallowPopulate as makeShallowPopulate } from './shallow-populate.hook.js'
 
-import type { HookContext, Params, Query } from '@feathersjs/feathers'
+import type { Params, Query } from '@feathersjs/feathers'
 
 import type {
+  GraphPopulateHookFunction,
   Method,
   PopulateObject,
   Populates,
@@ -33,7 +34,7 @@ export interface GraphPopulateHookOptions<S = string> {
  */
 export function graphPopulate(
   options: GraphPopulateHookOptions,
-): (context: HookContext) => Promise<HookContext> {
+): GraphPopulateHookFunction {
   if (!options.populates) {
     throw new Error(
       'options.populates must be provided to the feathers-graph-populate hook',
@@ -41,11 +42,14 @@ export function graphPopulate(
   }
   const { populates } = options
 
-  return async (context: HookContext): Promise<HookContext> => {
+  return async (context, next) => {
     const populateQuery: Query | undefined =
       context.params?.$populateParams?.query
 
-    if (!populateQuery) return context
+    if (!populateQuery) {
+      if (next) await next()
+      return context
+    }
 
     const { app } = context
     const graphPopulateApp: GraphPopulateApplication | undefined = (app as any)
@@ -119,10 +123,10 @@ export function graphPopulate(
     }, [] as PopulateObject[])
 
     if (!currentPopulates?.length) {
+      if (next) await next()
       return context
     }
     const shallowPopulate = makeShallowPopulate({ include: currentPopulates })
-    const populatedContext = await shallowPopulate(context)
-    return populatedContext
+    return shallowPopulate(context, next)
   }
 }

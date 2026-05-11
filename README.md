@@ -4,8 +4,6 @@
 [![libraries.io](https://img.shields.io/librariesio/release/npm/feathers-graph-populate)](https://libraries.io/npm/feathers-graph-populate)
 [![Download Status](https://img.shields.io/npm/dm/feathers-graph-populate.svg?style=flat-square)](https://www.npmjs.com/package/feathers-graph-populate)
 
-> NOTE: This is the version for Feathers v5. For Feathers v4 use [feathers-graph-populate v3](https://github.com/marshallswain/feathers-graph-populate/tree/crow)
-
 <p align="center">
   <img 
     src="https://feathers-graph-populate.netlify.app/img/graph-populate-logo.png" 
@@ -16,7 +14,7 @@
 
 Add lightning fast, GraphQL-like populates to your FeathersJS API.
 
-This project is built for [FeathersJS](http://feathersjs.com). An open source web framework for building modern real-time applications. 
+This project is built for [FeathersJS](http://feathersjs.com). An open source web framework for building modern real-time applications.
 
 ## Documentation
 
@@ -31,56 +29,56 @@ The top-level keys in the `populates` represent the name of the relationship.
 ```js
 const populates = {
   posts: {
-    service: 'posts',
-    nameAs: 'posts',
-    keyHere: '_id',
-    keyThere: 'authorId',
+    service: "posts",
+    nameAs: "posts",
+    keyHere: "_id",
+    keyThere: "authorId",
     asArray: true,
-    params: {}
+    params: {},
   },
   comments: {
-    service: 'comments',
-    nameAs: 'comments',
-    keyHere: '_id',
-    keyThere: 'userId',
+    service: "comments",
+    nameAs: "comments",
+    keyHere: "_id",
+    keyThere: "userId",
     asArray: true,
-    params: {}
+    params: {},
   },
   openTasks: {
-    service: 'tasks',
-    nameAs: 'openTasks',
-    keyHere: '_id',
-    keyThere: 'ownerIds',
+    service: "tasks",
+    nameAs: "openTasks",
+    keyHere: "_id",
+    keyThere: "ownerIds",
     asArray: true,
     params: {
       query: {
-        completedAt: null
-      }
-    }
+        completedAt: null,
+      },
+    },
   },
   role: {
-    service: 'roles',
-    nameAs: 'role',
-    keyHere: 'roleId',
-    keyThere: '_id',
+    service: "roles",
+    nameAs: "role",
+    keyHere: "roleId",
+    keyThere: "_id",
     asArray: false,
-    params: {}
-  }
-}
+    params: {},
+  },
+};
 ```
 
 ### Options for each relationship
 
 Each populate object must/can have the following properties:
 
-| **Option** | **Description** |
-|------------|-----------------|
-| `service`  | The service for the relationship<br><br>**required**<br>**Type:** `{String}` |
-| `nameAs`   | The property to be assigned to on this entry. It's recommended that you make the populate object key name match the `nameAs` property.<br><br>**required**<br>**Type:** `{String}` |
-| `keyHere`  | The primary or secondary key for the current entry<br><br>**required**<br>**Type:** `{String}` |
-| `keyThere` | The primary or secondary key for the referenced entry/entries<br><br>**required**<br>**Type:** `{String}` |
-| `asArray`  | Is the referenced item a single entry or an array of entries?<br><br>**optional - default:** `true`<br>**Type:** `{Boolean}`
-| `params`   | Additional params to be passed to the underlying service.<br>You can mutate the passed `params` object or return a newly created `params` object which gets merged deeply <br>Merged deeply after the params are generated internally.<br>**ProTip:** You can use this for adding a '$select' property or passing authentication and user data from 'context' to 'params' to restrict accesss<br><br>**optional - default:** `{}`<br>**Type:** `{Object | Function(params, context): undefined|params}` |
+| **Option** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | -------- |
+| `service`  | The service for the relationship<br><br>**required**<br>**Type:** `{String}`                                                                                                                                                                                                                                                                                                                                                                            |
+| `nameAs`   | The property to be assigned to on this entry. It's recommended that you make the populate object key name match the `nameAs` property.<br><br>**required**<br>**Type:** `{String}`                                                                                                                                                                                                                                                                      |
+| `keyHere`  | The primary or secondary key for the current entry<br><br>**required**<br>**Type:** `{String}`                                                                                                                                                                                                                                                                                                                                                          |
+| `keyThere` | The primary or secondary key for the referenced entry/entries<br><br>**required**<br>**Type:** `{String}`                                                                                                                                                                                                                                                                                                                                               |
+| `asArray`  | Is the referenced item a single entry or an array of entries?<br><br>**optional - default:** `true`<br>**Type:** `{Boolean}`                                                                                                                                                                                                                                                                                                                            |
+| `params`   | Additional params to be passed to the underlying service.<br>You can mutate the passed `params` object or return a newly created `params` object which gets merged deeply <br>Merged deeply after the params are generated internally.<br>**ProTip:** You can use this for adding a '$select' property or passing authentication and user data from 'context' to 'params' to restrict accesss<br><br>**optional - default:** `{}`<br>**Type:** `{Object | Function(params, context): undefined | params}` |
 
 ### Create named queries to use from connected clients.
 
@@ -89,35 +87,33 @@ The top-level keys in the `nameQueries` object are the query names. Nested keys 
 ```js
 const namedQueries = {
   withPosts: {
-    posts: {}
+    posts: {},
   },
   postsWithComments: {
     posts: {
-      comments: {}
-    }
+      comments: {},
+    },
   },
   postsWithCommentsWithUser: {
     posts: {
       comments: {
-        user:{}
-      }
-    }
-  }
-}
+        user: {},
+      },
+    },
+  },
+};
 ```
 
 ### Register the hook
 
 ```js
-const { populate } = require('feathers-graph-populate')
+import { populate } from "feathers-graph-populate";
 
 const hooks = {
   after: {
-    all: [
-      populate({ populates, namedQueries })
-    ]
-  }
-}
+    all: [populate({ populates, namedQueries })],
+  },
+};
 ```
 
 ### Perform Queries
@@ -125,70 +121,64 @@ const hooks = {
 Use a named query from a connected client:
 
 ```js
-feathersClient.service('users').find({
+feathersClient.service("users").find({
   query: {},
   $populateParams: {
-    name: 'postsWithCommentsWithUser'
-  }
-})
+    name: "postsWithCommentsWithUser",
+  },
+});
 ```
 
 Use a query object for internal requests. (named queries also work, internally):
 
 ```js
-app.service('users').find({
+app.service("users").find({
   query: {},
   $populateParams: {
     query: {
       posts: {
         comments: {
-          user:{}
-        }
-      }
-    }
-  }
-})
+          user: {},
+        },
+      },
+    },
+  },
+});
 ```
 
 ### Handling Custom Client-Side Params
 
-Since FeathersJS only supports passing `params.query` from client to server, by default, we need to let it know about the new `$populateParams` object.  We can do this using the `paramsForServer` and `paramsFromCLient` hooks:
+Since FeathersJS only supports passing `params.query` from client to server, by default, we need to let it know about the new `$populateParams` object. We can do this using the `paramsForServer` and `paramsFromClient` hooks from [`feathers-utils`](https://github.com/feathersjs/feathers-utils):
 
 ```js
-const { paramsForServer } = require('feathers-graph-populate')
+import { paramsForServer } from "feathers-utils/hooks";
 
 feathersClient.hooks({
   before: {
-    all: [
-      paramsForServer('$populateParams')
-    ]
-  }
-})
+    all: [paramsForServer("$populateParams")],
+  },
+});
 ```
 
 Now to allow the API server to receive the custom param:
 
 ```js
-const { paramsFromClient } = require('feathers-graph-populate')
+import { paramsFromClient } from "feathers-utils/hooks";
 
-feathersClient.hooks({
+app.service("users").hooks({
   before: {
-    all: [
-      paramsFromClient('$populateParams')
-    ]
-  }
-})
+    all: [paramsFromClient("$populateParams")],
+  },
+});
 ```
 
 ## Testing
 
 Simply run `npm test` and all your tests in the `test/` directory will be run.
 
-
 ## Help
 
 For more information on all the things you can do, visit [the generator](https://generator.feathers-plus.com/), [FeathersJS](http://docs.feathersjs.com) and [extensions](https://feathers-plus.github.io/).
-
 
 ## License
 

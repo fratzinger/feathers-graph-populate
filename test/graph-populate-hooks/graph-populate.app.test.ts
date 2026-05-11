@@ -2,11 +2,13 @@ import assert from 'node:assert'
 import type { Params } from '@feathersjs/feathers'
 import { feathers } from '@feathersjs/feathers'
 import { MemoryService } from '@feathersjs/memory'
+import type { AdapterParams } from '@feathersjs/adapter-commons'
 
 import configureGraphPopulate, { populate } from '../../src/index.js'
 import type { InitOptions, PopulateHookOptions } from '../../src/index.js'
 
-type GraphPopulateParams = Params & { $populateParams: any; test?: any }
+type GraphPopulateParams = Params &
+  AdapterParams & { $populateParams: any; test?: any }
 
 type MockAppOptions = {
   appOptions?: InitOptions
@@ -128,7 +130,7 @@ describe('graph-populate.app.test.ts', () => {
   it('initializes graph-populate with app.configure', () => {
     const { app, usersService, companiesService, postsService } = mockApp()
 
-    const graphPopulateApp = app.graphPopulate
+    const graphPopulateApp = (app as any).graphPopulate
 
     assert.ok(graphPopulateApp, 'app has graphPopulateApp')
     assert.ok(graphPopulateApp.__hooks, 'app has __hooks')
@@ -178,7 +180,7 @@ describe('graph-populate.app.test.ts', () => {
   it('app has two hooks for each type and method', () => {
     const { app } = mockApp()
 
-    const graphPopulateApp = app.graphPopulate
+    const graphPopulateApp = (app as any).graphPopulate
 
     graphPopulateApp.hooks({
       before: {
@@ -256,20 +258,20 @@ describe('graph-populate.app.test.ts', () => {
   it('has right hooks order before(app:all, app:method, service:all, service:method) after(service:all, service:method, app:all, app:method)', async () => {
     const { app, usersService, postsService } = mockApp()
 
-    const graphPopulateApp = app.graphPopulate
+    const graphPopulateApp = (app as any).graphPopulate
 
-    const calledAppAfterAll = {}
+    const calledAppAfterAll: Record<string, boolean> = {}
 
     graphPopulateApp.hooks({
       before: {
         all: [
-          (params) => {
+          (params: any) => {
             assert.ok(!params.count, '"app:before:all": count not set')
             params.count = 1
           },
         ],
         find: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               1,
@@ -279,7 +281,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         get: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               1,
@@ -289,7 +291,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         create: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               1,
@@ -299,7 +301,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         update: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               1,
@@ -309,7 +311,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         patch: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               1,
@@ -319,7 +321,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         remove: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               1,
@@ -331,7 +333,7 @@ describe('graph-populate.app.test.ts', () => {
       },
       after: {
         all: [
-          (params, context) => {
+          (params: any, context: any) => {
             assert.strictEqual(
               params.count,
               6,
@@ -342,7 +344,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         find: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               7,
@@ -352,7 +354,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         get: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               7,
@@ -362,7 +364,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         create: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               7,
@@ -372,7 +374,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         update: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               7,
@@ -382,7 +384,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         patch: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               7,
@@ -392,7 +394,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         remove: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               7,
@@ -407,7 +409,7 @@ describe('graph-populate.app.test.ts', () => {
     postsService.graphPopulate.hooks({
       before: {
         all: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               2,
@@ -417,7 +419,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         find: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               3,
@@ -427,7 +429,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         get: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               3,
@@ -437,7 +439,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         create: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               3,
@@ -447,7 +449,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         update: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               3,
@@ -457,7 +459,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         patch: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               3,
@@ -467,7 +469,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         remove: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               3,
@@ -479,7 +481,7 @@ describe('graph-populate.app.test.ts', () => {
       },
       after: {
         all: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               4,
@@ -489,7 +491,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         find: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               5,
@@ -499,7 +501,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         get: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               5,
@@ -509,7 +511,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         create: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               5,
@@ -519,7 +521,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         update: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               5,
@@ -529,7 +531,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         patch: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               5,
@@ -539,7 +541,7 @@ describe('graph-populate.app.test.ts', () => {
           },
         ],
         remove: [
-          (params) => {
+          (params: any) => {
             assert.strictEqual(
               params.count,
               5,
@@ -564,7 +566,9 @@ describe('graph-populate.app.test.ts', () => {
 
     await Promise.all(
       Object.keys(methods).map(async (method) => {
-        await usersService[method](...methods[method])
+        await (usersService as any)[method](
+          ...(methods as Record<string, any[]>)[method],
+        )
         assert.strictEqual(
           calledAppAfterAll[method],
           true,
@@ -577,7 +581,7 @@ describe('graph-populate.app.test.ts', () => {
   it('app hooks work with "all" for app and service', async () => {
     const { app, usersService, companiesService, postsService } = mockApp()
 
-    const graphPopulateApp = app.graphPopulate
+    const graphPopulateApp = (app as any).graphPopulate
 
     const company = await companiesService.create({ name: 'company' })
     const user = await usersService.create({ companyId: company.id })
@@ -661,7 +665,7 @@ describe('graph-populate.app.test.ts', () => {
     graphPopulateApp.hooks({
       before: {
         all: [
-          function (params, context) {
+          function (params: any, context: any) {
             calledBefore++
             if (context.params?.test !== undefined) {
               params.test = context.params.test
@@ -678,7 +682,7 @@ describe('graph-populate.app.test.ts', () => {
       },
       after: {
         all: [
-          function (params) {
+          function (params: any) {
             calledAfter++
             assert.ok(
               params.test === true,
@@ -729,7 +733,7 @@ describe('graph-populate.app.test.ts', () => {
   it('app hooks work with "all" for app and service', async () => {
     const { app, usersService, companiesService, postsService } = mockApp()
 
-    const graphPopulateApp = app.graphPopulate
+    const graphPopulateApp = (app as any).graphPopulate
 
     const company = await companiesService.create({ name: 'company' })
     const user = await usersService.create({ companyId: company.id })
@@ -813,7 +817,7 @@ describe('graph-populate.app.test.ts', () => {
     graphPopulateApp.hooks({
       before: {
         all: [
-          function (params, context) {
+          function (params: any, context: any) {
             calledBefore++
             if (context.params?.test !== undefined) {
               params.test = context.params.test
@@ -830,7 +834,7 @@ describe('graph-populate.app.test.ts', () => {
       },
       after: {
         all: [
-          function (params) {
+          function (params: any) {
             calledAfter++
             assert.ok(
               params.test === true,

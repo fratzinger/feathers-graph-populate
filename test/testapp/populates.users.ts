@@ -46,6 +46,7 @@ export const populates = {
     nameAs: 'organizations',
     asArray: true,
     params: async function (
+      this: { id: unknown },
       params: Params,
       context: HookContext,
     ): Promise<Params> {
@@ -55,7 +56,7 @@ export const populates = {
         },
         paginate: false,
       })
-      const ids = [...new Set(orgUsers.map((x) => x.orgId))]
+      const ids = [...new Set(orgUsers.map((x: { orgId: unknown }) => x.orgId))]
       return {
         query: {
           id: {

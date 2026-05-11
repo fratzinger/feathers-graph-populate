@@ -5,7 +5,6 @@ import _isEqual from 'lodash/isEqual.js'
 import _isFunction from 'lodash/isFunction.js'
 import _merge from 'lodash/merge.js'
 import _set from 'lodash/set.js'
-import _uniqBy from 'lodash/uniqBy.js'
 import type {
   AnyData,
   ChainedParamsOptions,
@@ -39,22 +38,33 @@ export const shouldCatchOnError = (
   return false
 }
 
-export const assertIncludes = (includes: PopulateObject[]): void => {
+const describeInclude = (
+  include: Partial<PopulateObject>,
+  index: number,
+): string => {
+  const nameAs = include.nameAs ? `nameAs="${include.nameAs}"` : null
+  const service = include.service ? `service="${include.service}"` : null
+  const parts = [nameAs, service].filter(Boolean).join(' ')
+  return parts ? `${parts} (index ${index})` : `index ${index}`
+}
+
+export const applyIncludeDefaults = (includes: PopulateObject[]): void => {
   for (const include of includes) {
-    // Create default `asArray` property
     if (!('asArray' in include)) {
       include.asArray = true
     }
-    // Create default `params` property
     if (!('params' in include)) {
       include.params = {}
     }
-    // Create default `requestPerItem` property
     if (!('requestPerItem' in include)) {
       include.requestPerItem =
         !('keyHere' in include) && !('keyThere' in include)
     }
+  }
+}
 
+export const assertIncludes = (includes: PopulateObject[]): void => {
+  includes.forEach((include, index) => {
     const isDynamic = isDynamicParams(include.params)
 
     const requiredAttrs = isDynamic
@@ -64,29 +74,32 @@ export const assertIncludes = (includes: PopulateObject[]): void => {
     requiredAttrs.forEach((attr) => {
       if (!(attr in include)) {
         throw new Error(
-          'shallowPopulate hook: Every `include` must contain `service`, `nameAs` and (`keyHere` and `keyThere`) or `params` properties',
+          `shallowPopulate hook: include ${describeInclude(include, index)} is missing required attribute \`${attr}\`. Every include must contain \`service\`, \`nameAs\` and (\`keyHere\` and \`keyThere\`) or \`params\`.`,
         )
       }
     })
 
-    // if is dynamicParams and `keyHere` is defined, also `keyThere` must be defined
     if (
       isDynamic &&
       ((!('keyHere' in include) && 'keyThere' in include) ||
         ('keyHere' in include && !('keyThere' in include)))
     ) {
       throw new Error(
-        'shallowPopulate hook: Every `include` with attribute `keyHere` or `keyThere` also needs the other attribute defined',
+        `shallowPopulate hook: include ${describeInclude(include, index)} defines only one of \`keyHere\`/\`keyThere\`. Both must be set together.`,
       )
     }
-  }
+  })
 
-  const uniqueNameAs = _uniqBy(includes, 'nameAs')
-  if (uniqueNameAs.length !== includes.length) {
-    throw new Error(
-      'shallowPopulate hook: Every `ìnclude` must have a unique `nameAs` property',
-    )
-  }
+  const seen = new Map<string, number>()
+  includes.forEach((include, index) => {
+    const previous = seen.get(include.nameAs)
+    if (previous !== undefined) {
+      throw new Error(
+        `shallowPopulate hook: duplicate \`nameAs="${include.nameAs}"\` at index ${index} (first defined at index ${previous}). Every include must have a unique \`nameAs\`.`,
+      )
+    }
+    seen.set(include.nameAs, index)
+  })
 }
 
 export const chainedParams = async (
@@ -94,19 +107,27 @@ export const chainedParams = async (
   context: HookContext,
   target: any,
   options: ChainedParamsOptions = {},
-): Promise<Params> => {
-  if (!Array.isArray(paramsArr)) paramsArr = [paramsArr]
+): Promise<Params | undefined> => {
+  const arr = Array.isArray(paramsArr) ? paramsArr : [paramsArr]
   const { thisKey, skipWhenUndefined } = options
 
   const resultingParams: Params = {}
-  for (let i = 0, n = paramsArr.length; i < n; i++) {
-    let params = paramsArr[i]
-    if (_isFunction(params)) {
+  for (let i = 0, n = arr.length; i < n; i++) {
+    let params: Params | void | undefined
+    const current = arr[i]
+    if (_isFunction(current)) {
+      const fn = current as (
+        params: Params,
+        context: HookContext,
+        target: any,
+      ) => void | Params | Promise<void | Params>
       params =
         thisKey == null
-          ? params(resultingParams, context, target)
-          : params.call(thisKey, resultingParams, context, target)
+          ? fn(resultingParams, context, target)
+          : fn.call(thisKey, resultingParams, context, target)
       params = await Promise.resolve(params)
+    } else {
+      params = current
     }
     if (!params && skipWhenUndefined) return undefined
     if (params !== resultingParams) _merge(resultingParams, params)
@@ -138,11 +159,11 @@ export async function makeCumulatedRequest(
     service,
   }
 
-  params = await chainedParams(
+  params = (await chainedParams(
     [params, ...toArray(include.params)],
     context,
     target,
-  )
+  )) as Params
 
   // modify params & rm $skip & $m $limit
 
@@ -213,44 +234,51 @@ export function setItems(
 ): void {
   const { nameAs, keyThere, asArray } = include
 
+  // keyThere was force-added to $select in makeCumulatedRequest so we could
+  // match. If the user did not ask for it, strip it from the items we attach —
+  // but on a clone, so the upstream service response stays untouched.
+  const stripKeyThere = !!(
+    params?.query?.$select && !params.query.$select.includes(keyThere)
+  )
+  const strip = (item: AnyData): AnyData => {
+    if (!stripKeyThere) return item
+    const { [keyThere]: _omit, ...rest } = item
+    return rest
+  }
+  const stripResult = (
+    result: GetRelatedItemsResult,
+  ): GetRelatedItemsResult => {
+    if (!stripKeyThere || result == null) return result
+    return Array.isArray(result) ? result.map(strip) : strip(result)
+  }
+
   data.forEach((item) => {
     const keyHere = _get(item, include.keyHere!) as
       | (string | number)
       | (string | number)[]
 
-    if (keyHere !== undefined) {
-      if (Array.isArray(keyHere)) {
-        if (!asArray) {
-          const items = getRelatedItems(
-            keyHere[0],
-            relatedItems,
-            include,
-            params,
-          )
-          if (items !== undefined) {
-            _set(item, nameAs, items)
-          }
-        } else {
-          _set(
-            item,
-            nameAs,
-            getRelatedItems(keyHere, relatedItems, include, params),
-          )
+    if (keyHere === undefined) return
+
+    if (Array.isArray(keyHere)) {
+      if (!asArray) {
+        const found = getRelatedItems(keyHere[0], relatedItems, include, params)
+        if (found !== undefined) {
+          _set(item, nameAs, stripResult(found))
         }
       } else {
-        const items = getRelatedItems(keyHere, relatedItems, include, params)
-        if (items !== undefined) {
-          _set(item, nameAs, items)
-        }
+        _set(
+          item,
+          nameAs,
+          stripResult(getRelatedItems(keyHere, relatedItems, include, params)),
+        )
+      }
+    } else {
+      const found = getRelatedItems(keyHere, relatedItems, include, params)
+      if (found !== undefined) {
+        _set(item, nameAs, stripResult(found))
       }
     }
   })
-
-  if (params.query?.$select && !params.query.$select.includes(keyThere)) {
-    relatedItems.forEach((item) => {
-      delete item[keyThere]
-    })
-  }
 }
 
 type GetRelatedItemsResult = AnyData | AnyData[] | null
@@ -263,7 +291,7 @@ export function getRelatedItems(
 ): GetRelatedItemsResult {
   const { keyThere } = include
   const skip = params?.query?.$skip ?? 0
-  const limit = params?.query?.$limit ?? Math.max
+  const limit = params?.query?.$limit ?? Infinity
   ids = toArray(ids)
   let skipped = 0
   let itemOrItems: GetRelatedItemsResult = noRelation(include)

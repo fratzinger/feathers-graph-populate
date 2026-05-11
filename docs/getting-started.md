@@ -35,7 +35,7 @@ Configuring `feathers-graph-populate` in the `app.js` file, allows the global us
 
 ```js
 // src/app.js
-const graphPopulate = require('feathers-graph-populate')
+import graphPopulate from 'feathers-graph-populate'
 app.configure(graphPopulate({
   allowUnnamedQueryForExternal: false // default: false
 }))
@@ -144,7 +144,7 @@ The last query, above, is called `postsWithCommentsWithUser`. The query is `{ po
 The populate hook will need to be registered on all services on which you wish to populate data AND their target populates. For the query examples, above, the `posts`, `comments`, and `users` services will all require the hook to be registered as an "after all" hook:
 
 ```js
-const { populate } = require('feathers-graph-populate')
+import { populate } from 'feathers-graph-populate'
 
 const populates = { /* See above */ }
 const namedQueries = { /* See above */ }
@@ -165,10 +165,10 @@ The `option` object for the hook can have the following properties:
 
 ### Enable Custom Client-Side Params
 
-Since FeathersJS only supports passing `params.query` from client to server, by default, we need to let it know about the new `$populateParams` object. We can do this using the `paramsForServer` and `paramsFromClient` hooks:
+Since FeathersJS only supports passing `params.query` from client to server, by default, we need to let it know about the new `$populateParams` object. We can do this using the `paramsForServer` and `paramsFromClient` hooks from [`feathers-utils`](https://github.com/feathersjs/feathers-utils):
 
 ```js
-const { paramsForServer } = require('feathers-graph-populate')
+import { paramsForServer } from 'feathers-utils/hooks'
 
 feathersClient.hooks({
   before: {
@@ -182,9 +182,9 @@ feathersClient.hooks({
 Now to allow the API server to receive the custom param:
 
 ```js
-const { paramsFromClient } = require('feathers-graph-populate')
+import { paramsFromClient } from 'feathers-utils/hooks'
 
-feathersClient.hooks({
+app.service('users').hooks({
   before: {
     all: [
       paramsFromClient('$populateParams')
@@ -257,12 +257,12 @@ You can also define additional custom query parameter per service. For example i
 
 ```js
 // posts.service.js
-const createService = ...
-const createModel = ...
-const hooks = ...
-const graphPopulate = require('./posts.graph-populate') // containing `populates`, `namedQueries`, `defaultQueryName` and `whitelist`
+import createService from '...'
+import createModel from '...'
+import hooks from '...'
+import graphPopulate from './posts.graph-populate.js' // containing `populates`, `namedQueries`, `defaultQueryName` and `whitelist`
 
-module.exports = function (app) {
+export default function (app) {
   let Model = createModel(app);
   let paginate = app.get('paginate');
 
@@ -283,7 +283,7 @@ module.exports = function (app) {
   */
 
   app.use('/posts', createService(options));
-};
+}
 ```
 
 Now you can perform queries like this:

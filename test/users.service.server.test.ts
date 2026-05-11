@@ -29,7 +29,7 @@ describe('users.service.server.test.ts', () => {
         const user = users[0]
 
         assert.ok(user.posts.length, 'user has posts')
-        user.posts.forEach((post) => {
+        user.posts.forEach((post: any) => {
           assert.strictEqual(
             post.authorId,
             user.id,
@@ -81,7 +81,7 @@ describe('users.service.server.test.ts', () => {
         const user = users[0]
 
         assert.ok(user.posts.length, 'user has posts')
-        user.posts.forEach((post) => {
+        user.posts.forEach((post: any) => {
           assert.strictEqual(
             post.authorId,
             user.id,
@@ -114,7 +114,7 @@ describe('users.service.server.test.ts', () => {
         const user = users[0]
 
         assert.ok(user.posts.length, 'user has posts')
-        user.posts.forEach((post) => {
+        user.posts.forEach((post: any) => {
           assert.strictEqual(
             post.authorId,
             user.id,
@@ -182,7 +182,7 @@ describe('users.service.server.test.ts', () => {
         const user = users[0]
 
         assert.ok(user.posts.length, 'user has posts')
-        user.posts.forEach((post) => {
+        user.posts.forEach((post: any) => {
           assert.deepStrictEqual(
             _omit(post, ['id', 'authorId']),
             {},
@@ -350,12 +350,12 @@ describe('users.service.server.test.ts', () => {
         )[0]
 
         assert.ok(
-          user1.posts.some((post) => post.title !== title),
+          user1.posts.some((post: any) => post.title !== title),
           'reference user has other posts',
         )
         assert.ok(
           user2.posts.length > 0 &&
-            user2.posts.every((post) => post.title === title),
+            user2.posts.every((post: any) => post.title === title),
           'only posts with given title',
         )
       })
@@ -376,12 +376,12 @@ describe('users.service.server.test.ts', () => {
         })
 
         const everyUserHasOrganizations = usersWithOrgNames.every(
-          (user) => user.organizations.length !== undefined,
+          (user: any) => user.organizations.length !== undefined,
         )
 
         assert.ok(everyUserHasOrganizations, 'populated organizations')
-        usersWithOrgNames.forEach((user) => {
-          user.organizations.forEach((org) => {
+        usersWithOrgNames.forEach((user: any) => {
+          user.organizations.forEach((org: any) => {
             assert.deepStrictEqual(
               Object.keys(org).sort(),
               ['id', 'name'].sort(),
@@ -407,7 +407,7 @@ describe('users.service.server.test.ts', () => {
         const user = users[0]
 
         assert.ok(user.posts.length, 'user has posts')
-        user.posts.forEach((post) => {
+        user.posts.forEach((post: any) => {
           assert.strictEqual(
             post.authorId,
             user.id,
@@ -418,7 +418,7 @@ describe('users.service.server.test.ts', () => {
             'no author was populated, since we did not request one.',
           )
           assert.ok(post.comments.length, 'comments were populated')
-          post.comments.forEach((comment) => {
+          post.comments.forEach((comment: any) => {
             assert.strictEqual(
               post.id,
               comment.postId,
@@ -467,7 +467,7 @@ describe('users.service.server.test.ts', () => {
         const user = users[0]
 
         assert.ok(user.posts.length, 'user has posts')
-        user.posts.forEach((post) => {
+        user.posts.forEach((post: any) => {
           assert.strictEqual(
             post.authorId,
             user.id,
@@ -478,7 +478,7 @@ describe('users.service.server.test.ts', () => {
             'no author was populated, since we did not request one.',
           )
           assert.ok(post.comments.length, 'comments were populated')
-          post.comments.forEach((comment) => {
+          post.comments.forEach((comment: any) => {
             assert.strictEqual(
               post.id,
               comment.postId,
@@ -505,7 +505,7 @@ describe('users.service.server.test.ts', () => {
         const user = users[0]
 
         assert.ok(user.posts.length, 'user has posts')
-        user.posts.forEach((post) => {
+        user.posts.forEach((post: any) => {
           assert.strictEqual(
             post.authorId,
             user.id,
@@ -516,7 +516,7 @@ describe('users.service.server.test.ts', () => {
             'no author was populated, since we did not request one.',
           )
           assert.ok(post.comments.length, 'comments were populated')
-          post.comments.forEach((comment) => {
+          post.comments.forEach((comment: any) => {
             assert.strictEqual(
               post.id,
               comment.postId,
@@ -568,7 +568,7 @@ describe('users.service.server.test.ts', () => {
         const user = users[0]
 
         assert.ok(user.posts.length, 'user has posts')
-        user.posts.forEach((post) => {
+        user.posts.forEach((post: any) => {
           assert.strictEqual(
             post.authorId,
             user.id,
@@ -579,7 +579,7 @@ describe('users.service.server.test.ts', () => {
             'no author was populated, since we did not request one.',
           )
           assert.ok(post.comments.length, 'comments were populated')
-          post.comments.forEach((comment) => {
+          post.comments.forEach((comment: any) => {
             assert.strictEqual(
               post.id,
               comment.postId,
@@ -622,12 +622,12 @@ describe('users.service.server.test.ts', () => {
         const user = users[0]
 
         assert.ok(user.orgMemberships.length, 'user has orgMemberships')
-        user.orgMemberships.forEach((orgMembership) => {
+        user.orgMemberships.forEach((orgMembership: any) => {
           assert.ok(orgMembership.org, 'got orgMembership with nested org')
           assert.ok(orgMembership.user, 'got orgMembership with nested user')
         })
 
-        user.groupMemberships.forEach((groupMembership) => {
+        user.groupMemberships.forEach((groupMembership: any) => {
           assert.ok(groupMembership.org, 'got groupMembership with nested org')
           assert.ok(
             groupMembership.group,
@@ -640,7 +640,7 @@ describe('users.service.server.test.ts', () => {
         })
 
         assert.ok(user.posts.length, 'user has posts')
-        user.posts.forEach((post) => {
+        user.posts.forEach((post: any) => {
           assert.strictEqual(
             post.authorId,
             user.id,
@@ -651,7 +651,7 @@ describe('users.service.server.test.ts', () => {
             'no author was populated, since we did not request one.',
           )
           assert.ok(post.comments.length, 'comments were populated')
-          post.comments.forEach((comment) => {
+          post.comments.forEach((comment: any) => {
             assert.strictEqual(
               post.id,
               comment.postId,
@@ -661,7 +661,7 @@ describe('users.service.server.test.ts', () => {
         })
 
         assert.ok(user.comments.length, 'got all of the user comments')
-        user.comments.forEach((comment) => {
+        user.comments.forEach((comment: any) => {
           assert.ok(comment.post, 'got the post nested in the coment')
         })
 
@@ -702,16 +702,16 @@ describe('users.service.server.test.ts', () => {
         const user = users[0]
 
         assert.ok(user.tasks.length)
-        user.tasks.forEach((task) => {
+        user.tasks.forEach((task: any) => {
           assert.ok(task.childTasks.length, 'got the childTasks')
 
-          task.childTasks.forEach((task) => {
+          task.childTasks.forEach((task: any) => {
             assert.ok(task.childTasks.length, 'got the childTasks')
 
-            task.childTasks.forEach((task) => {
+            task.childTasks.forEach((task: any) => {
               assert.ok(task.childTasks.length, 'got the childTasks')
 
-              task.childTasks.forEach((task) => {
+              task.childTasks.forEach((task: any) => {
                 assert.ok(!task.ChildTasks, 'no tasks populated at this level')
               })
             })
@@ -747,7 +747,7 @@ describe('users.service.server.test.ts', () => {
       })
 
       assert.ok(user.posts.length, 'user has posts')
-      user.posts.forEach((post) => {
+      user.posts.forEach((post: any) => {
         assert.strictEqual(
           post.authorId,
           user.id,
@@ -758,7 +758,7 @@ describe('users.service.server.test.ts', () => {
           'no author was populated, since we did not request one.',
         )
         assert.ok(post.comments.length, 'comments were populated')
-        post.comments.forEach((comment) => {
+        post.comments.forEach((comment: any) => {
           assert.strictEqual(
             post.id,
             comment.postId,
