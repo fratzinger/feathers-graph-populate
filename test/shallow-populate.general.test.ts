@@ -1054,7 +1054,7 @@ describe('shallow-populate.general.test.ts', () => {
       it('can pass in custom params-function with context', async () => {
         const keyHere = 'postsId'
 
-        let paramsFunctionCalled = false
+        let paramsFunctionCalled: boolean
 
         const shallowPopulate = makePopulate({
           include: {

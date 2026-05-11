@@ -77,10 +77,7 @@ export function enableHooks(obj: any, methods: string[], types: string[]): AnyDa
   return Object.assign(obj, {
     hooks(
       this: { __hooks: HookData },
-      allHooks:
-        | HookData
-        | GraphPopulateHook
-        | GraphPopulateHook[],
+      allHooks: HookData | GraphPopulateHook | GraphPopulateHook[],
     ) {
       each(
         allHooks,
@@ -95,8 +92,7 @@ export function enableHooks(obj: any, methods: string[], types: string[]): AnyDa
           methods.forEach((method) => {
             const methodKey = method as HookMapKey
             const map = this.__hooks[typeKey]!
-            const currentHooks =
-              map[methodKey] || (map[methodKey] = [])
+            const currentHooks = map[methodKey] || (map[methodKey] = [])
 
             if (hooks.all) {
               currentHooks.push(...hooks.all)

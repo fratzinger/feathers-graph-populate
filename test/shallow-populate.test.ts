@@ -1465,11 +1465,7 @@ describe('shallow-populate.test.ts', () => {
                 service: 'orgs',
                 nameAs: 'org',
                 asArray: false,
-                params: async function (
-                  this: any,
-                  params: any,
-                  context: any,
-                ) {
+                params: async function (this: any, params: any, context: any) {
                   const user = await context.app
                     .service('users')
                     .get(this.userId)
