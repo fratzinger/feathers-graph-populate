@@ -2,9 +2,7 @@ import { graphPopulate as makeGraphPopulate } from './graph-populate.hook.js'
 import type { GetPopulateQueryOptions } from '../utils/get-query.js'
 import { getQuery } from '../utils/get-query.js'
 
-import type { HookContext } from '@feathersjs/feathers'
-
-import type { Populates } from '../types.js'
+import type { GraphPopulateHookFunction, Populates } from '../types.js'
 
 export type PopulateHookOptions<S = string> = Pick<
   GetPopulateQueryOptions,
@@ -23,7 +21,7 @@ export type PopulateHookOptions<S = string> = Pick<
  */
 export function populate(
   options: PopulateHookOptions,
-): (context: HookContext) => Promise<HookContext> {
+): GraphPopulateHookFunction {
   const {
     namedQueries,
     defaultQueryName,
@@ -33,9 +31,10 @@ export function populate(
 
   const graphPopulate = makeGraphPopulate({ populates })
 
-  return async (context: HookContext): Promise<HookContext> => {
+  return async (context, next) => {
     // Skip this hook if there are no $populateParams or defaultQueryName
     if (!context.params.$populateParams && !defaultQueryName) {
+      if (next) await next()
       return context
     }
     /**
@@ -48,7 +47,10 @@ export function populate(
       allowUnnamedQueryForExternal,
     })
 
-    if (!query) return context
+    if (!query) {
+      if (next) await next()
+      return context
+    }
 
     // Set the query at params.$populateParams.query
     if (!context.params.$populateParams) context.params.$populateParams = {}
@@ -58,6 +60,6 @@ export function populate(
     /**
      * The graphPopulate hook expects to find a query at params.$populateParams.query
      */
-    return graphPopulate(context)
+    return graphPopulate(context, next)
   }
 }

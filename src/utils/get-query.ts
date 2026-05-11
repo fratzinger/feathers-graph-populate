@@ -1,10 +1,9 @@
 import type { HookContext, Query } from '@feathersjs/feathers'
 import type { GraphPopulateApplication } from '../app/graph-populate.class.js'
-import type { AnyData } from '../types.js'
 
 export interface GetPopulateQueryOptions {
   context: HookContext
-  namedQueries?: AnyData
+  namedQueries?: Record<string, Query>
   defaultQueryName?: string
   /**
    * @default: false

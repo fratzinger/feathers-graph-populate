@@ -1,9 +1,9 @@
-import type { HookContext } from '@feathersjs/feathers'
+import type { GraphPopulateHookFunction } from '../types.js'
 
 export function paramsFromClient(
   ...whitelist: string[]
-): (context: HookContext) => HookContext {
-  return (context: HookContext): HookContext => {
+): GraphPopulateHookFunction {
+  return async (context, next) => {
     const params = context.params
 
     if (
@@ -24,6 +24,7 @@ export function paramsFromClient(
       delete params.query._$client
     }
 
+    if (next) await next()
     return context
   }
 }

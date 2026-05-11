@@ -1,8 +1,11 @@
 import _get from 'lodash/get.js'
 import _set from 'lodash/set.js'
 
+import type { Id } from '@feathersjs/feathers'
+
 import type { CumulatedIncludeAndIds } from '../utils/shallow-populate.utils.js'
 import {
+  applyIncludeDefaults,
   assertIncludes,
   makeCumulatedRequest,
   makeRequestPerItem,
@@ -11,11 +14,10 @@ import {
   shouldCatchOnError,
 } from '../utils/shallow-populate.utils.js'
 
-import type { HookContext } from '@feathersjs/feathers'
-
 import type {
   AnyData,
   CumulatedRequestResult,
+  GraphPopulateHookFunction,
   IncludeCumulated,
   IncludeShared,
   PopulateObject,
@@ -25,7 +27,7 @@ import { toArray } from '../utils/to-array.js'
 
 export function shallowPopulate(
   opts: ShallowPopulateOptions,
-): (context: HookContext) => Promise<HookContext> {
+): GraphPopulateHookFunction {
   const options = {
     catchOnError: false,
     ...opts,
@@ -39,6 +41,7 @@ export function shallowPopulate(
     )
   }
 
+  applyIncludeDefaults(includes)
   assertIncludes(includes)
 
   const cumulatedIncludes = includes.filter(
@@ -49,14 +52,17 @@ export function shallowPopulate(
     (include) => include.requestPerItem,
   ) as IncludeShared[]
 
-  return async (context: HookContext): Promise<HookContext> => {
+  return async (context, next) => {
+    const isAround = typeof next === 'function'
+    if (isAround) await next!()
+
     const { app, type } = context
-    let data: AnyData[] =
-      type === 'before'
-        ? context.data
-        : context.method === 'find'
-          ? context.result.data || context.result
-          : context.result
+    const useData = !isAround && type === 'before'
+    let data: AnyData[] = useData
+      ? context.data
+      : context.method === 'find'
+        ? context.result.data || context.result
+        : context.result
 
     data = toArray(data)
 
@@ -70,7 +76,7 @@ export function shallowPopulate(
       let result: CumulatedIncludeAndIds | undefined = undefined
 
       for (const item of data) {
-        const id = _get(item, include.keyHere!)
+        const id = _get(item, include.keyHere!) as Id | Id[] | null | undefined
         if (id == null) {
           _set(item, include.nameAs, noRelation(include))
           continue
