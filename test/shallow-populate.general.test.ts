@@ -315,7 +315,7 @@ const beforeAfter: [
 ]
 
 describe('shallow-populate.general.test.ts', () => {
-  let app
+  let app: any
 
   beforeEach(async () => {
     app = await mockApp()
@@ -406,9 +406,8 @@ describe('shallow-populate.general.test.ts', () => {
       },
     ]
 
-    includesOptions.forEach((options) => {
+    includesOptions.forEach((options: any) => {
       assert.throws(() => {
-        // @ts-expect-error test case
         makePopulate(options)
       }, 'Every `include` must contain `service`, `nameAs` and (`keyHere` and `keyThere`) or properties')
     })
@@ -451,7 +450,7 @@ describe('shallow-populate.general.test.ts', () => {
     for (const { type, dataResult } of beforeAfter) {
       const context = {
         app: {
-          service(path) {
+          service(path: any) {
             return app.service(path)
           },
         },
@@ -1063,7 +1062,7 @@ describe('shallow-populate.general.test.ts', () => {
             nameAs: 'posts',
             keyHere,
             keyThere: 'id',
-            params: (params, context) => {
+            params: (params: any, context: any) => {
               assert.ok(
                 context?.method === 'create',
                 'we can pass the context to include',
@@ -1146,7 +1145,7 @@ describe('shallow-populate.general.test.ts', () => {
           }
           const context = {
             app: {
-              service(path) {
+              service(path: any) {
                 return app.service(path)
               },
             },
@@ -1259,26 +1258,26 @@ describe('shallow-populate.general.test.ts', () => {
                 params: [
                   {},
                   { query: { second: true } },
-                  (params) => {
+                  (params: any) => {
                     assert.ok(params.query.second, 'walked through before')
                     params.third = true
                   },
-                  (params) => {
+                  (params: any) => {
                     assert.ok(params.third, 'walked through before')
                     return { query: { fourth: true } }
                   },
-                  async (params) => {
+                  async (params: any) => {
                     assert.ok(params.query.fourth, 'walked through before')
                     await new Promise((resolve) => setTimeout(resolve, 200))
                     params.fifth = true
                   },
-                  (params, context) => {
+                  (params: any, context: any) => {
                     assert.ok(params.fifth, 'walked through before')
                     if (context.app) {
                       return { sixth: true }
                     }
                   },
-                  (params) => {
+                  (params: any) => {
                     assert.deepStrictEqual(
                       params,
                       expected,
@@ -1292,7 +1291,7 @@ describe('shallow-populate.general.test.ts', () => {
           }
           const context = {
             app: {
-              service(path) {
+              service(path: any) {
                 return app.service(path)
               },
             },
@@ -1323,7 +1322,7 @@ describe('shallow-populate.general.test.ts', () => {
               nameAs: 'posts',
               keyHere: 'postsId',
               keyThere: 'id',
-              params: (params, context, target) => {
+              params: (params: any, context: any, target: any) => {
                 assert.ok(target, 'target is defined')
                 assert.ok(
                   target.service && typeof target.service.find === 'function',
@@ -1808,7 +1807,7 @@ describe('shallow-populate.general.test.ts', () => {
           include: {
             service: 'posts',
             nameAs: 'posts',
-            params: function (params, context) {
+            params: function (this: any, params: any, context: any) {
               assert.deepStrictEqual(
                 this,
                 item,
@@ -1898,7 +1897,7 @@ describe('shallow-populate.general.test.ts', () => {
         }
         const context = {
           app: {
-            service(path) {
+            service(path: any) {
               return app.service(path)
             },
           },
@@ -1929,7 +1928,7 @@ describe('shallow-populate.general.test.ts', () => {
           include: {
             service: 'posts',
             nameAs: 'posts',
-            params: async (params) => {
+            params: async (params: any) => {
               await new Promise((resolve) => {
                 setTimeout(resolve, 200)
               })
@@ -1995,28 +1994,28 @@ describe('shallow-populate.general.test.ts', () => {
               params: [
                 {},
                 { query: { second: true } },
-                (params) => {
+                (params: any) => {
                   assert.ok(params.query.second, 'walked through before')
                   params.third = true
                   return params
                 },
-                (params) => {
+                (params: any) => {
                   assert.ok(params.third, 'walked through before')
                   return { query: { fourth: true } }
                 },
-                async (params) => {
+                async (params: any) => {
                   assert.ok(params.query.fourth, 'walked through before')
                   await new Promise((resolve) => setTimeout(resolve, 200))
                   params.fifth = true
                   return params
                 },
-                (params, context) => {
+                (params: any, context: any) => {
                   assert.ok(params.fifth, 'walked through before')
                   if (context.app) {
                     return { sixth: true }
                   }
                 },
-                (params) => {
+                (params: any) => {
                   assert.deepStrictEqual(
                     params,
                     expected,
@@ -2031,7 +2030,7 @@ describe('shallow-populate.general.test.ts', () => {
         }
         const context = {
           app: {
-            service(path) {
+            service(path: any) {
               return app.service(path)
             },
           },
@@ -2060,7 +2059,7 @@ describe('shallow-populate.general.test.ts', () => {
           include: {
             service: 'posts',
             nameAs: 'posts',
-            params: (params, context, target) => {
+            params: (params: any, context: any, target: any) => {
               assert.ok(target, 'target is defined')
               assert.ok(
                 target.service && typeof target.service.find === 'function',

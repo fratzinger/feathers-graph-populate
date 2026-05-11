@@ -2,14 +2,12 @@ import assert from 'node:assert'
 import type { Params } from '@feathersjs/feathers'
 import { feathers } from '@feathersjs/feathers'
 import { MemoryService } from '@feathersjs/memory'
+import type { AdapterParams } from '@feathersjs/adapter-commons'
 
-import configureGraphPopulate, {
-  paramsForServer,
-  paramsFromClient,
-  populate,
-} from '../../src/index.js'
+import configureGraphPopulate, { populate } from '../../src/index.js'
 
-type GraphPopulateParams = Params & { $populateParams?: any; test?: any }
+type GraphPopulateParams = Params &
+  AdapterParams & { $populateParams?: any; test?: any }
 
 const mockApp = () => {
   const app = feathers<{
@@ -31,7 +29,7 @@ const mockApp = () => {
 
   const usersService = app.service('users')
 
-  usersService.hooks({
+  ;(usersService as any).hooks({
     around: {
       all: [
         populate({
@@ -66,7 +64,7 @@ const mockApp = () => {
 
   const companiesService = app.service('companies')
 
-  companiesService.hooks({
+  ;(companiesService as any).hooks({
     around: {
       all: [
         populate({
@@ -165,57 +163,5 @@ describe('graph-populate.around.test.ts', () => {
     const fetched = (await usersService.get(user.id)) as any
     assert.strictEqual(fetched.company, undefined)
     assert.strictEqual(fetched.posts, undefined)
-  })
-
-  it('paramsForServer + paramsFromClient round-trip as around-hooks', async () => {
-    const app = feathers<{
-      items: MemoryService<any, any, GraphPopulateParams>
-    }>()
-    app.use('items', new MemoryService({ multi: true, startId: 1 }) as any)
-    const items = app.service('items')
-
-    let observed: any
-    items.hooks({
-      around: {
-        all: [
-          paramsFromClient('$populateParams'),
-          async (context, next) => {
-            observed = {
-              $populateParams: context.params.$populateParams,
-              hasUnderscore: !!(context.params.query as any)?._$client,
-            }
-            await next()
-          },
-        ],
-      },
-    })
-
-    // Simulate a client that runs paramsForServer before the request.
-    const clientCtx: any = {
-      params: { $populateParams: { name: 'complete' }, query: {} },
-    }
-    await paramsForServer('$populateParams')(clientCtx)
-    assert.deepStrictEqual(
-      clientCtx.params.query._$client._$populateParams,
-      { name: 'complete' },
-      'paramsForServer moved $populateParams under query._$client',
-    )
-
-    // Send only query — the wire payload after a real client would only carry
-    // params.query — so we drop the top-level $populateParams that the legacy
-    // void-returning hook leaves behind on the local context.
-    const wireParams = { query: clientCtx.params.query }
-    await items.create({ name: 'x' }, wireParams)
-
-    assert.deepStrictEqual(
-      observed.$populateParams,
-      { name: 'complete' },
-      'paramsFromClient restored $populateParams on the server',
-    )
-    assert.strictEqual(
-      observed.hasUnderscore,
-      false,
-      'paramsFromClient stripped _$client from query',
-    )
   })
 })

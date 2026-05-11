@@ -26,8 +26,8 @@ But what if you want to use this in every of your various `populates`? `feathers
 ```js
 // src/app.js
 
-const graphPopulate = require('feathers-graph-populate')
-const graphPopulateHooks = require('./graph-populate.hooks.js')
+import graphPopulate from 'feathers-graph-populate'
+import graphPopulateHooks from './graph-populate.hooks.js'
 app.configure(graphPopulate())
 app.graphPopulate.hooks({
   before: {
@@ -52,8 +52,8 @@ You can enable **app wide hooks** with the following setup:
 
 ```js
 // src/app.js
-const graphPopulate = require('feathers-graph-populate')
-const graphPopulateHooks = require('./graph-populate.hooks.js')
+import graphPopulate from 'feathers-graph-populate'
+import graphPopulateHooks from './graph-populate.hooks.js'
 app.configure(graphPopulate()) // this line is also needed for graph-populate servide hooks
 app.graphPopulate.hooks(graphPopulateHooks)
 ```
@@ -61,7 +61,7 @@ app.graphPopulate.hooks(graphPopulateHooks)
 ```js
 // src/graph-populate.hooks.js
 
-module.exports = {
+export default {
   before: {
     all: [],
     find: [],
@@ -81,8 +81,7 @@ module.exports = {
     patch: [],
     remove: [],
   }
-};
-
+}
 ```
 
 #### Per service
@@ -93,13 +92,13 @@ After configuring `feathers-graph-populate` in `src/app.js` you can define **ser
 // src/services/users/users.service.js
 
 // Initializes the `users` service on path `/users`.
-const createService = require('feathers-nedb');
-const createModel = require('../../models/users.model');
-const hooks = require('./users.hooks');
+import createService from 'feathers-nedb';
+import createModel from '../../models/users.model.js';
+import hooks from './users.hooks.js';
 // ^1
-const graphPopulateHooks = require('./users.graph-populate-hooks.js')
+import graphPopulateHooks from './users.graph-populate-hooks.js'
 
-module.exports = function (app) {
+export default function (app) {
   let Model = createModel(app);
   let paginate = app.get('paginate');
 
@@ -115,13 +114,13 @@ module.exports = function (app) {
   service.hooks(hooks);
   // ^2
   service.graphPopulate.hooks(graphPopulateHooks);
-};
+}
 ```
 with:
 ```js
 // src/services/users/users.graph-populate-hooks.js
 
-module.exports = {
+export default {
   before: {
     all: [],
     find: [],
@@ -141,8 +140,7 @@ module.exports = {
     patch: [],
     remove: [],
   }
-};
-
+}
 ```
 
 ## Concepts

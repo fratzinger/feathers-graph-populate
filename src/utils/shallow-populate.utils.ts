@@ -107,19 +107,27 @@ export const chainedParams = async (
   context: HookContext,
   target: any,
   options: ChainedParamsOptions = {},
-): Promise<Params> => {
-  if (!Array.isArray(paramsArr)) paramsArr = [paramsArr]
+): Promise<Params | undefined> => {
+  const arr = Array.isArray(paramsArr) ? paramsArr : [paramsArr]
   const { thisKey, skipWhenUndefined } = options
 
   const resultingParams: Params = {}
-  for (let i = 0, n = paramsArr.length; i < n; i++) {
-    let params = paramsArr[i]
-    if (_isFunction(params)) {
+  for (let i = 0, n = arr.length; i < n; i++) {
+    let params: Params | void | undefined
+    const current = arr[i]
+    if (_isFunction(current)) {
+      const fn = current as (
+        params: Params,
+        context: HookContext,
+        target: any,
+      ) => void | Params | Promise<void | Params>
       params =
         thisKey == null
-          ? params(resultingParams, context, target)
-          : params.call(thisKey, resultingParams, context, target)
+          ? fn(resultingParams, context, target)
+          : fn.call(thisKey, resultingParams, context, target)
       params = await Promise.resolve(params)
+    } else {
+      params = current
     }
     if (!params && skipWhenUndefined) return undefined
     if (params !== resultingParams) _merge(resultingParams, params)
@@ -151,11 +159,11 @@ export async function makeCumulatedRequest(
     service,
   }
 
-  params = await chainedParams(
+  params = (await chainedParams(
     [params, ...toArray(include.params)],
     context,
     target,
-  )
+  )) as Params
 
   // modify params & rm $skip & $m $limit
 

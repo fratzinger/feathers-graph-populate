@@ -2,6 +2,7 @@ import assert from 'node:assert'
 import type { Params } from '@feathersjs/feathers'
 import { feathers } from '@feathersjs/feathers'
 import { MemoryService } from '@feathersjs/memory'
+import type { AdapterParams } from '@feathersjs/adapter-commons'
 
 import configureGraphPopulate, {
   populate,
@@ -9,7 +10,7 @@ import configureGraphPopulate, {
 } from '../../src/index.js'
 import { assertIncludes } from '../../src/utils/shallow-populate.utils.js'
 
-type Ctx = Params & { $populateParams?: any }
+type Ctx = Params & AdapterParams & { $populateParams?: any }
 
 describe('regression: $limit honored in cumulated populates', () => {
   it('limits attached related items when $limit is set in populate params', async () => {

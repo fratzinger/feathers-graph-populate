@@ -309,7 +309,7 @@ const beforeAfter: [
 ]
 
 describe('shallow-populate.test.ts', () => {
-  let app
+  let app: any
 
   beforeEach(async () => {
     app = await mockApp()
@@ -657,7 +657,7 @@ describe('shallow-populate.test.ts', () => {
             result.posts.length,
             `${type}: posts should have been populated`,
           )
-          result.posts.forEach((post) => {
+          result.posts.forEach((post: any) => {
             const { name, id, ...rest } = post
             assert.deepStrictEqual(rest, {}, `${type}: only has name property`)
           })
@@ -848,7 +848,7 @@ describe('shallow-populate.test.ts', () => {
                 // from: 'posts',
                 service: 'tasks',
                 nameAs: 'tasks',
-                params: function () {
+                params: function (this: any) {
                   return { query: { userId: this.userId } }
                 },
               },
@@ -1187,7 +1187,7 @@ describe('shallow-populate.test.ts', () => {
           const response = await shallowPopulate(context)
           const result = response[dataResult]
           assert.ok(result.users.length, 'posts should have been populated')
-          result.users.forEach((user) => {
+          result.users.forEach((user: any) => {
             const { name, id, ...rest } = user
             assert.deepStrictEqual(rest, {}, 'only has name property')
           })
@@ -1444,7 +1444,7 @@ describe('shallow-populate.test.ts', () => {
                 // from: 'posts',
                 service: 'tasks',
                 nameAs: 'tasks',
-                params: function () {
+                params: function (this: any) {
                   return { query: { userId: this.userId } }
                 },
               },
@@ -1452,7 +1452,7 @@ describe('shallow-populate.test.ts', () => {
                 // from: 'posts',
                 service: 'tags',
                 nameAs: 'tags',
-                params: function () {
+                params: function (this: any) {
                   return {
                     query: {
                       userId: this.userId,
@@ -1465,7 +1465,11 @@ describe('shallow-populate.test.ts', () => {
                 service: 'orgs',
                 nameAs: 'org',
                 asArray: false,
-                params: async function (params, context) {
+                params: async function (
+                  this: any,
+                  params: any,
+                  context: any,
+                ) {
                   const user = await context.app
                     .service('users')
                     .get(this.userId)
@@ -1478,7 +1482,7 @@ describe('shallow-populate.test.ts', () => {
                 nameAs: 'tag',
                 asArray: false,
                 params: [
-                  function () {
+                  function (this: any) {
                     return {
                       query: {
                         userId: this.userId,
@@ -1493,7 +1497,7 @@ describe('shallow-populate.test.ts', () => {
                 service: 'tasks',
                 nameAs: 'nullTask',
                 asArray: false,
-                params: function () {
+                params: function (this: any) {
                   return undefined
                 },
               },
@@ -1501,7 +1505,7 @@ describe('shallow-populate.test.ts', () => {
                 // from: 'posts',
                 service: 'tasks',
                 nameAs: 'emptyTasks',
-                params: function () {
+                params: function (this: any) {
                   return undefined
                 },
               },
@@ -1860,7 +1864,7 @@ describe('shallow-populate.test.ts', () => {
 
           const response = await shallowPopulate(context)
           const result = response[dataResult]
-          result.forEach((item) => {
+          result.forEach((item: any) => {
             assert.ok(item.users, 'should have users property')
           })
         }
@@ -1901,12 +1905,12 @@ describe('shallow-populate.test.ts', () => {
           const response = await shallowPopulate(context)
           const result = response[dataResult]
 
-          result.forEach((user) => {
+          result.forEach((user: any) => {
             assert.ok(
               user.posts.length,
               `${type}: posts should have been populated`,
             )
-            user.posts.forEach((post) => {
+            user.posts.forEach((post: any) => {
               const { name, id, ...rest } = post
               assert.deepStrictEqual(
                 rest,
@@ -1986,7 +1990,7 @@ describe('shallow-populate.test.ts', () => {
           const response2 = await shallowPopulate2(context2)
           const users2 = response2[dataResult]
 
-          users1.forEach((user1, i) => {
+          users1.forEach((user1: any, i: number) => {
             const user2 = users2[i]
             assert.ok(
               user1.posts.length - 1 === user2.posts.length,
@@ -2064,7 +2068,7 @@ describe('shallow-populate.test.ts', () => {
           const response2 = await shallowPopulate2(context2)
           const users2 = response2[dataResult]
 
-          users1.forEach((user1, i) => {
+          users1.forEach((user1: any, i: number) => {
             const user2 = users2[i]
             assert.ok(
               user1.posts.length > user2.posts.length,
@@ -2120,7 +2124,7 @@ describe('shallow-populate.test.ts', () => {
             const response = await shallowPopulate(context)
             const result = response[dataResult]
 
-            result.forEach((post) => {
+            result.forEach((post: any) => {
               const expectedTasks = Object.values(
                 app.service('tasks').store,
               ).map((x: any) => {
@@ -2160,7 +2164,7 @@ describe('shallow-populate.test.ts', () => {
                 // from: 'posts',
                 service: 'tasks',
                 nameAs: 'tasks',
-                params: function () {
+                params: function (this: any) {
                   return { query: { userId: this.userId } }
                 },
               },
@@ -2179,7 +2183,7 @@ describe('shallow-populate.test.ts', () => {
             const response = await shallowPopulate(context)
             const result = response[dataResult]
 
-            result.forEach((post) => {
+            result.forEach((post: any) => {
               const expectedTasks = Object.values(
                 app.service('tasks').store,
               ).filter((x: any) => x.userId === post.userId)
@@ -2555,9 +2559,9 @@ describe('shallow-populate.test.ts', () => {
           const response = await shallowPopulate(context)
           const result = response[dataResult]
 
-          result.forEach((post, i) => {
+          result.forEach((post: any, i: number) => {
             assert.ok(post.users.length, 'posts should have been populated')
-            post.users.forEach((user) => {
+            post.users.forEach((user: any) => {
               const { name, id, ...rest } = user
               assert.deepStrictEqual(rest, {}, 'only has name property')
             })
@@ -2664,7 +2668,7 @@ describe('shallow-populate.test.ts', () => {
 
           const { [dataResult]: users2 } = await shallowPopulate2(context2)
 
-          users1.forEach((user1, i) => {
+          users1.forEach((user1: any, i: number) => {
             const user2 = users2[i]
 
             assert.ok(
@@ -2762,7 +2766,7 @@ describe('shallow-populate.test.ts', () => {
 
           const { [dataResult]: users2 } = await shallowPopulate2(context2)
 
-          users1.forEach((user1, i) => {
+          users1.forEach((user1: any, i: number) => {
             const user2 = users2[i]
 
             assert.ok(
@@ -2830,7 +2834,7 @@ describe('shallow-populate.test.ts', () => {
             const response = await shallowPopulate(context)
             const result = response[dataResult]
 
-            result.forEach((post) => {
+            result.forEach((post: any) => {
               const expectedTasks = Object.values(
                 app.service('tasks').store,
               ).map((x: any) => {
@@ -2863,7 +2867,7 @@ describe('shallow-populate.test.ts', () => {
                 // from: 'posts',
                 service: 'tasks',
                 nameAs: 'tasks',
-                params: function () {
+                params: function (this: any) {
                   return { query: { userId: this.userId } }
                 },
               },
@@ -2871,7 +2875,7 @@ describe('shallow-populate.test.ts', () => {
                 // from: 'posts',
                 service: 'tags',
                 nameAs: 'tags',
-                params: function () {
+                params: function (this: any) {
                   return {
                     query: {
                       userId: this.userId,
@@ -2884,7 +2888,11 @@ describe('shallow-populate.test.ts', () => {
                 service: 'orgs',
                 nameAs: 'org',
                 asArray: false,
-                params: async function (params: Params, context: HookContext) {
+                params: async function (
+                  this: any,
+                  params: Params,
+                  context: HookContext,
+                ) {
                   const user = await context.app
                     .service('users')
                     .get(this.userId)
@@ -2897,7 +2905,7 @@ describe('shallow-populate.test.ts', () => {
                 nameAs: 'tag',
                 asArray: false,
                 params: [
-                  function () {
+                  function (this: any) {
                     return {
                       query: {
                         userId: this.userId,
@@ -2912,7 +2920,7 @@ describe('shallow-populate.test.ts', () => {
                 service: 'tasks',
                 nameAs: 'nullTask',
                 asArray: false,
-                params: function () {
+                params: function (this: any) {
                   return undefined
                 },
               },
@@ -2920,7 +2928,7 @@ describe('shallow-populate.test.ts', () => {
                 // from: 'posts',
                 service: 'tasks',
                 nameAs: 'emptyTasks',
-                params: function () {
+                params: function (this: any) {
                   return undefined
                 },
               },
@@ -2958,13 +2966,13 @@ describe('shallow-populate.test.ts', () => {
             const response = await shallowPopulate(context)
             const result = response[dataResult]
 
-            result.forEach((post) => {
+            result.forEach((post: any) => {
               const expectedTasks = Object.values(
                 app.service('tasks').store,
               ).filter((x: any) => x.userId === post.userId)
               const expectedTags = Object.values(app.service('tags').store)
                 .filter((x: any) => x.userId === post.userId)
-                .map((x) => {
+                .map((x: any) => {
                   return { id: x.id }
                 })
               const user: any = Object.values(
