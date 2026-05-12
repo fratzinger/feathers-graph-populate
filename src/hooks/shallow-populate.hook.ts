@@ -67,7 +67,7 @@ export function shallowPopulate(
     data = toArray(data)
 
     if (!data.length) {
-      return context
+      return
     }
 
     const includesAndIds: CumulatedIncludeAndIds[] = []
@@ -152,7 +152,5 @@ export function shallowPopulate(
     })
 
     await Promise.all(promisesPerIncludeAndItem)
-
-    return context
   }
 }

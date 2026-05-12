@@ -8,7 +8,7 @@ import type {
 export type GraphPopulateHookFunction = (
   context: HookContext,
   next?: NextFunction,
-) => Promise<HookContext>
+) => Promise<void>
 
 export type AnyData = Record<string, unknown>
 

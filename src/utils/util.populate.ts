@@ -39,7 +39,7 @@ export async function populateUtil(
     params,
   }
   const deepPopulate = graphPopulate({ populates })
-  const populated = await deepPopulate(miniContext as HookContext)
+  await deepPopulate(miniContext as HookContext)
 
-  return populated.result
+  return miniContext.result
 }
