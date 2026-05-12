@@ -460,8 +460,8 @@ describe('shallow-populate.general.test.ts', () => {
         [dataResult]: {},
       } as unknown as HookContext
 
-      const response = await shallowPopulate(context)
-      const result = response[dataResult]
+      await shallowPopulate(context)
+      const result = context[dataResult]
 
       assert.deepStrictEqual(
         result,
@@ -774,8 +774,8 @@ describe('shallow-populate.general.test.ts', () => {
           },
         } as unknown as HookContext
 
-        const response = await shallowPopulate(context)
-        const { [dataResult]: result } = response
+        await shallowPopulate(context)
+        const { [dataResult]: result } = context
 
         assert.ok(reachedThrow, 'throw was fired')
         assert.ok(result.posts.length === 0, 'set empty array by default')
@@ -829,8 +829,8 @@ describe('shallow-populate.general.test.ts', () => {
           },
         } as unknown as HookContext
 
-        const response = await shallowPopulate(context)
-        const { [dataResult]: result } = response
+        await shallowPopulate(context)
+        const { [dataResult]: result } = context
 
         assert.ok(reachedThrow, 'throw was fired')
         assert.ok(result.posts.length === 0, 'set empty array by default')
@@ -1456,8 +1456,8 @@ describe('shallow-populate.general.test.ts', () => {
 
         const shallowPopulate = makePopulate(options)
 
-        const response = await shallowPopulate(context)
-        const { [dataResult]: result } = response
+        await shallowPopulate(context)
+        const { [dataResult]: result } = context
 
         assert.ok(throwReached, 'throw was fired')
         assert.ok(result.posts.length === 0, 'set empty array by default')
@@ -1509,8 +1509,8 @@ describe('shallow-populate.general.test.ts', () => {
           },
         } as unknown as HookContext
 
-        const response = await shallowPopulate(context)
-        const { [dataResult]: result } = response
+        await shallowPopulate(context)
+        const { [dataResult]: result } = context
 
         assert.ok(throwReached, 'throw was fired')
         assert.ok(result.posts.length === 0, 'set empty array by default')

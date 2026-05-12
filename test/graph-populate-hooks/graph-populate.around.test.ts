@@ -29,7 +29,7 @@ const mockApp = () => {
 
   const usersService = app.service('users')
 
-  ;(usersService as any).hooks({
+  usersService.hooks({
     around: {
       all: [
         populate({
@@ -64,7 +64,7 @@ const mockApp = () => {
 
   const companiesService = app.service('companies')
 
-  ;(companiesService as any).hooks({
+  companiesService.hooks({
     around: {
       all: [
         populate({

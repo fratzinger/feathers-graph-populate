@@ -336,8 +336,8 @@ describe('shallow-populate.test.ts', () => {
       } as unknown as HookContext
 
       const shallowPopulate = makePopulate(options)
-      const response = await shallowPopulate(context)
-      const result = response[dataResult]
+      await shallowPopulate(context)
+      const result = context[dataResult]
 
       assert.deepStrictEqual(
         result,
@@ -375,8 +375,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
 
           assert.ok(result.post, `${type}: post should have been populated`)
           assert.ok(
@@ -413,8 +413,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
 
           assert.ok(result.post, `${type}: post should have been populated`)
           assert.ok(
@@ -450,8 +450,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
 
           assert.ok(
             !result.posts,
@@ -485,8 +485,8 @@ describe('shallow-populate.test.ts', () => {
             },
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
 
           assert.deepStrictEqual(
             result.posts,
@@ -522,8 +522,8 @@ describe('shallow-populate.test.ts', () => {
             },
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(
             result.meta.posts.length,
             `${type}: posts should have been populated`,
@@ -555,8 +555,8 @@ describe('shallow-populate.test.ts', () => {
             },
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
 
           assert.ok(
             result.posts.length,
@@ -588,8 +588,8 @@ describe('shallow-populate.test.ts', () => {
             },
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
 
           assert.ok(result.posts, `${type}: posts should have been populated`)
         }
@@ -618,8 +618,8 @@ describe('shallow-populate.test.ts', () => {
             },
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
 
           assert.ok(result.users, `${type}: should have users property`)
         }
@@ -650,8 +650,8 @@ describe('shallow-populate.test.ts', () => {
             },
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
 
           assert.ok(
             result.posts.length,
@@ -700,8 +700,8 @@ describe('shallow-populate.test.ts', () => {
             },
           } as unknown as HookContext
 
-          const response1 = await shallowPopulate1(context1)
-          const user1 = response1[dataResult]
+          await shallowPopulate1(context1)
+          const user1 = context1[dataResult]
 
           const context2 = {
             app,
@@ -715,8 +715,8 @@ describe('shallow-populate.test.ts', () => {
             },
           } as unknown as HookContext
 
-          const response2 = await shallowPopulate2(context2)
-          const user2 = response2[dataResult]
+          await shallowPopulate2(context2)
+          const user2 = context2[dataResult]
 
           assert.ok(
             user1.posts.length - 1 === user2.posts.length,
@@ -761,8 +761,8 @@ describe('shallow-populate.test.ts', () => {
             },
           } as unknown as HookContext
 
-          const response1 = await shallowPopulate1(context1)
-          const user1 = response1[dataResult]
+          await shallowPopulate1(context1)
+          const user1 = context1[dataResult]
 
           const context2 = {
             app,
@@ -776,8 +776,8 @@ describe('shallow-populate.test.ts', () => {
             },
           } as unknown as HookContext
 
-          const response2 = await shallowPopulate2(context2)
-          const user2 = response2[dataResult]
+          await shallowPopulate2(context2)
+          const user2 = context2[dataResult]
 
           assert.ok(
             user1.posts.length > user2.posts.length,
@@ -817,8 +817,8 @@ describe('shallow-populate.test.ts', () => {
               },
             } as unknown as HookContext
 
-            const response = await shallowPopulate(context)
-            const result = response[dataResult]
+            await shallowPopulate(context)
+            const result = context[dataResult]
 
             const expected = Object.values(app.service('tasks').store).map(
               (x: any) => {
@@ -867,8 +867,8 @@ describe('shallow-populate.test.ts', () => {
             } as unknown as HookContext
 
             const shallowPopulate = makePopulate(options)
-            const response = await shallowPopulate(context)
-            const result = response[dataResult]
+            await shallowPopulate(context)
+            const result = context[dataResult]
 
             const expectedTasks = Object.values(
               app.service('tasks').store,
@@ -922,8 +922,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(result.post, 'post should have been populated')
           assert.ok(!Array.isArray(result.post), 'post should not be an array')
           assert.ok(result.post.id === '111', 'post has correct id')
@@ -967,8 +967,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(result.post, 'post should have been populated')
           assert.ok(!Array.isArray(result.post), 'post should not be an array')
           assert.ok(result.post.id === '111', 'post has correct id')
@@ -1010,8 +1010,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(
             result.posts.length === 0,
             'posts should have not been populated',
@@ -1057,8 +1057,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(
             result.meta.posts.length,
             'posts should have been populated',
@@ -1102,8 +1102,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(result.posts.length, 'posts should have been populated')
         }
       })
@@ -1139,8 +1139,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(
             result.users.length === 1,
             'data should have correct users data',
@@ -1184,8 +1184,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(result.users.length, 'posts should have been populated')
           result.users.forEach((user: any) => {
             const { name, id, ...rest } = user
@@ -1243,7 +1243,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate1 = makePopulate(options1)
 
-          const { [dataResult]: user1 } = await shallowPopulate1(context1)
+          await shallowPopulate1(context1)
+          const { [dataResult]: user1 } = context1
 
           const options2 = {
             include: [
@@ -1277,7 +1278,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate2 = makePopulate(options2)
 
-          const { [dataResult]: user2 } = await shallowPopulate2(context2)
+          await shallowPopulate2(context2)
+          const { [dataResult]: user2 } = context2
 
           assert.ok(
             user1.posts.length - 1 === user2.posts.length,
@@ -1325,7 +1327,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate1 = makePopulate(options1)
 
-          const { [dataResult]: user1 } = await shallowPopulate1(context1)
+          await shallowPopulate1(context1)
+          const { [dataResult]: user1 } = context1
 
           const options2 = {
             include: [
@@ -1359,7 +1362,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate2 = makePopulate(options2)
 
-          const { [dataResult]: user2 } = await shallowPopulate2(context2)
+          await shallowPopulate2(context2)
+          const { [dataResult]: user2 } = context2
 
           assert.ok(
             user1.posts.length > user2.posts.length,
@@ -1411,8 +1415,8 @@ describe('shallow-populate.test.ts', () => {
 
             const shallowPopulate = makePopulate(options)
 
-            const response = await shallowPopulate(context)
-            const result = response[dataResult]
+            await shallowPopulate(context)
+            const result = context[dataResult]
             const expectedTasks = Object.values(app.service('tasks').store).map(
               (x: any) => {
                 return { id: x.id }
@@ -1522,8 +1526,8 @@ describe('shallow-populate.test.ts', () => {
               },
             } as unknown as HookContext
 
-            const response = await shallowPopulate(context)
-            const result = response[dataResult]
+            await shallowPopulate(context)
+            const result = context[dataResult]
             const expectedTasks = Object.values(
               app.service('tasks').store,
             ).filter((x: any) => x.userId === '11')
@@ -1612,8 +1616,8 @@ describe('shallow-populate.test.ts', () => {
             ],
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(result[0].post, 'post should have been populated')
           assert.ok(
             !Array.isArray(result[0].post),
@@ -1666,8 +1670,8 @@ describe('shallow-populate.test.ts', () => {
             ],
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(result[0].post, 'post should have been populated')
           assert.ok(
             !Array.isArray(result[0].post),
@@ -1719,9 +1723,9 @@ describe('shallow-populate.test.ts', () => {
             ],
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
+          await shallowPopulate(context)
 
-          const result = response[dataResult]
+          const result = context[dataResult]
           assert.ok(result[0].tags.length === 3, 'tags have been populated')
           assert.ok(result[1].tags.length === 0, 'tags have not been populated')
         }
@@ -1768,8 +1772,8 @@ describe('shallow-populate.test.ts', () => {
             ],
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(
             result[0].meta.posts.length === 3,
             'result[0] posts should have been populated',
@@ -1812,8 +1816,8 @@ describe('shallow-populate.test.ts', () => {
             ],
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(
             result[0].posts.length === 3,
             'result[0] should have correct posts data',
@@ -1858,8 +1862,8 @@ describe('shallow-populate.test.ts', () => {
             ],
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           result.forEach((item: any) => {
             assert.ok(item.users, 'should have users property')
           })
@@ -1898,8 +1902,8 @@ describe('shallow-populate.test.ts', () => {
             ],
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
 
           result.forEach((user: any) => {
             assert.ok(
@@ -1950,8 +1954,8 @@ describe('shallow-populate.test.ts', () => {
           } as unknown as HookContext
 
           const shallowPopulate1 = makePopulate(options1)
-          const response1 = await shallowPopulate1(context1)
-          const users1 = response1[dataResult]
+          await shallowPopulate1(context1)
+          const users1 = context1[dataResult]
 
           const options2 = {
             include: {
@@ -1983,8 +1987,8 @@ describe('shallow-populate.test.ts', () => {
           } as unknown as HookContext
 
           const shallowPopulate2 = makePopulate(options2)
-          const response2 = await shallowPopulate2(context2)
-          const users2 = response2[dataResult]
+          await shallowPopulate2(context2)
+          const users2 = context2[dataResult]
 
           users1.forEach((user1: any, i: number) => {
             const user2 = users2[i]
@@ -2028,8 +2032,8 @@ describe('shallow-populate.test.ts', () => {
           } as unknown as HookContext
 
           const shallowPopulate1 = makePopulate(options1)
-          const response1 = await shallowPopulate1(context1)
-          const users1 = response1[dataResult]
+          await shallowPopulate1(context1)
+          const users1 = context1[dataResult]
 
           const options2 = {
             include: {
@@ -2061,8 +2065,8 @@ describe('shallow-populate.test.ts', () => {
           } as unknown as HookContext
 
           const shallowPopulate2 = makePopulate(options2)
-          const response2 = await shallowPopulate2(context2)
-          const users2 = response2[dataResult]
+          await shallowPopulate2(context2)
+          const users2 = context2[dataResult]
 
           users1.forEach((user1: any, i: number) => {
             const user2 = users2[i]
@@ -2117,8 +2121,8 @@ describe('shallow-populate.test.ts', () => {
 
             const shallowPopulate = makePopulate(options)
 
-            const response = await shallowPopulate(context)
-            const result = response[dataResult]
+            await shallowPopulate(context)
+            const result = context[dataResult]
 
             result.forEach((post: any) => {
               const expectedTasks = Object.values(
@@ -2176,8 +2180,8 @@ describe('shallow-populate.test.ts', () => {
 
             const shallowPopulate = makePopulate(options)
 
-            const response = await shallowPopulate(context)
-            const result = response[dataResult]
+            await shallowPopulate(context)
+            const result = context[dataResult]
 
             result.forEach((post: any) => {
               const expectedTasks = Object.values(
@@ -2247,8 +2251,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(result[0].post, 'post should have been populated')
           assert.ok(
             !Array.isArray(result[0].post),
@@ -2313,8 +2317,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(result[0].post, 'post should have been populated')
           assert.ok(
             !Array.isArray(result[0].post),
@@ -2377,8 +2381,8 @@ describe('shallow-populate.test.ts', () => {
             ],
           } as unknown as HookContext
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(result[0].posts.length === 4, 'posts have been populated')
           assert.ok(result[0].tags.length === 0, 'tags have not been populated')
           assert.ok(result[1].tags.length === 0, 'tags have not been populated')
@@ -2429,8 +2433,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(
             result[0].posts.length === 3,
             'result[0] should have correct posts data',
@@ -2488,8 +2492,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
           assert.ok(
             result[0].users.length === 1,
             'result[0] should have correct users data',
@@ -2552,8 +2556,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate = makePopulate(options)
 
-          const response = await shallowPopulate(context)
-          const result = response[dataResult]
+          await shallowPopulate(context)
+          const result = context[dataResult]
 
           result.forEach((post: any, i: number) => {
             assert.ok(post.users.length, 'posts should have been populated')
@@ -2621,7 +2625,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate1 = makePopulate(options1)
 
-          const { [dataResult]: users1 } = await shallowPopulate1(context1)
+          await shallowPopulate1(context1)
+          const { [dataResult]: users1 } = context1
 
           const options2 = {
             include: [
@@ -2662,7 +2667,8 @@ describe('shallow-populate.test.ts', () => {
 
           const shallowPopulate2 = makePopulate(options2)
 
-          const { [dataResult]: users2 } = await shallowPopulate2(context2)
+          await shallowPopulate2(context2)
+          const { [dataResult]: users2 } = context2
 
           users1.forEach((user1: any, i: number) => {
             const user2 = users2[i]
@@ -2739,7 +2745,8 @@ describe('shallow-populate.test.ts', () => {
             ],
           } as unknown as HookContext
 
-          const { [dataResult]: users1 } = await shallowPopulate1(context1)
+          await shallowPopulate1(context1)
+          const { [dataResult]: users1 } = context1
 
           const context2 = {
             app,
@@ -2760,7 +2767,8 @@ describe('shallow-populate.test.ts', () => {
             ],
           } as unknown as HookContext
 
-          const { [dataResult]: users2 } = await shallowPopulate2(context2)
+          await shallowPopulate2(context2)
+          const { [dataResult]: users2 } = context2
 
           users1.forEach((user1: any, i: number) => {
             const user2 = users2[i]
@@ -2827,8 +2835,8 @@ describe('shallow-populate.test.ts', () => {
               [dataResult]: posts,
             } as unknown as HookContext
 
-            const response = await shallowPopulate(context)
-            const result = response[dataResult]
+            await shallowPopulate(context)
+            const result = context[dataResult]
 
             result.forEach((post: any) => {
               const expectedTasks = Object.values(
@@ -2959,8 +2967,8 @@ describe('shallow-populate.test.ts', () => {
               [dataResult]: posts,
             } as unknown as HookContext
 
-            const response = await shallowPopulate(context)
-            const result = response[dataResult]
+            await shallowPopulate(context)
+            const result = context[dataResult]
 
             result.forEach((post: any) => {
               const expectedTasks = Object.values(

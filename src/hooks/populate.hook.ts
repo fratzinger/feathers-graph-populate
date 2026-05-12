@@ -35,7 +35,7 @@ export function populate(
     // Skip this hook if there are no $populateParams or defaultQueryName
     if (!context.params.$populateParams && !defaultQueryName) {
       if (next) await next()
-      return context
+      return
     }
     /**
      * The `getQuery` function sets up params.$populateParams.query.
@@ -49,7 +49,7 @@ export function populate(
 
     if (!query) {
       if (next) await next()
-      return context
+      return
     }
 
     // Set the query at params.$populateParams.query
@@ -60,6 +60,6 @@ export function populate(
     /**
      * The graphPopulate hook expects to find a query at params.$populateParams.query
      */
-    return graphPopulate(context, next)
+    await graphPopulate(context, next)
   }
 }

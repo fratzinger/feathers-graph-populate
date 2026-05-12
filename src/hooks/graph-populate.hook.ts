@@ -48,7 +48,7 @@ export function graphPopulate(
 
     if (!populateQuery) {
       if (next) await next()
-      return context
+      return
     }
 
     const { app } = context
@@ -124,9 +124,9 @@ export function graphPopulate(
 
     if (!currentPopulates?.length) {
       if (next) await next()
-      return context
+      return
     }
     const shallowPopulate = makeShallowPopulate({ include: currentPopulates })
-    return shallowPopulate(context, next)
+    await shallowPopulate(context, next)
   }
 }
